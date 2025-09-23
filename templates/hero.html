@@ -1,0 +1,161 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+    </style>
+</head>
+<body class="bg-white">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white shadow-md container mx-auto p-4 flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+          <img src="{% static 'images/Luxi-Hosting-Logo.png' %}" 
+              alt="Logo Finance Illustration" 
+              class="w-10 md:w-25"> <!-- ukuran kecil di mobile -->
+          <span class="text-lg md:text-2xl font-bold text-gray-800">Finance</span>
+      </div>
+
+        <nav class="flex items-center space-x-6 scale-70 md:scale-100 origin-top-right">
+            <a href="#about-section" class="text-gray-600 font-medium hover:text-green-500">About</a>
+            <a href="#team-section" class="text-gray-600 font-medium hover:text-green-500">Team</a>
+            <a href="{% url 'calculate' %}" 
+            class="hidden md:inline-block bg-orange-400 text-white font-semibold py-2 px-6 rounded-lg shadow-md hover:bg-orange-500 transition-colors duration-300">TRY</a>
+        </nav>
+    </header>
+
+
+    <main class="container mx-auto p-4 md:flex items-center justify-between min-h-[calc(100vh-6rem)] relative">
+        <div class="absolute inset-0 z-0 overflow-hidden">
+            <div class="bubble w-20 h-20 bg-green-200 opacity-70 top-1/4 left-1/4" style="animation-duration: 8s;"></div>
+            <div class="bubble w-16 h-16 bg-blue-200 opacity-60 top-1/2 left-3/4" style="animation-duration: 12s; animation-delay: 2s;"></div>
+            <div class="bubble w-24 h-24 bg-orange-200 opacity-50 top-3/4 left-1/3" style="animation-duration: 10s; animation-delay: 4s;"></div>
+        </div>
+        <!-- Left Section -->
+        <div class="flex-1 text-center md:text-left mb-10 md:mb-0 animate-fadeInSlideUp relative z-10" >
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-800 leading-tight mb-4">
+                WELCOME TO <br class="hidden md:block">
+                <span class="text-green-500">Finance</span>
+            </h2>
+            <p class="text-gray-600 text-lg md:text-xl max-w-lg mx-auto md:mx-0">
+                Smart Finance Starts Here. Rekomendasi cerdas untuk rekomendasi keuangan yang lebih terarah dengan teknologi Machine Learning.
+            </p>
+        </div>
+        <!-- Right Section with Illustration -->
+        <div class="flex-1 flex justify-center md:justify-end animate-fadeInSlideUp relative z-10">
+          <!-- Background bubble animation -->
+          <div class="absolute inset-0 -z-10 overflow-hidden">
+              <div class="bubble w-16 h-16 bg-blue-400/50 rounded-full absolute bottom-0 left-1/4"></div>
+              <div class="bubble w-10 h-10 bg-green-400/50 rounded-full absolute bottom-0 left-1/2"></div>
+              <div class="bubble w-20 h-20 bg-purple-400/50 rounded-full absolute bottom-0 left-3/4"></div>
+          </div>
+
+          <!-- Main Illustration -->
+          <img src="{% static 'images/Banner1.png' %}" 
+              alt="Finance Illustration" 
+              class="w-full max-w-md relative z-10">
+      </div>
+
+    </main>
+
+    <!-- About Section (as shown in the image below the fold) -->
+    <section class="container mx-auto p-4 mt-16 md:mt-24 animate-fadeInSlideUp relative z-10" id="about-section ">
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">ABOUT
+          <br class="hidden md:block">
+                <span class="text-green-500">Finance</span>
+        </h2>
+        <!-- You would place the content from your previous "About Us" file here -->
+        <div class="bg-gray-50 rounded-xl p-8">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4">Mengubah Data Jadi Rencana Keuangan yang Lebih Cerdas</h3>
+            <p class="text-gray-700 mb-6">
+                Website ini hadir untuk membantumu mengatur keuangan pribadi dengan cara yang lebih modern dan praktis. Cukup masukkan gaji serta catatan pengeluaran harian, lalu sistem kami—berbasis Machine Learning—akan mengolah data tersebut dan memberikan rekomendasi pembagian gaji yang lebih terarah.
+            </p>
+            <div class="flex flex-col md:flex-row items-center justify-center space-y-8 md:space-y-0 md:space-x-8">
+                <div class="w-60 md:w-1/2">
+                     <img src="{% static 'images/Feature1.png' %}" alt="Mobile illustration" class="w-full scale-[0.7] mx-auto">
+                </div>
+                <div class="w-full md:w-1/2">
+                    <h4 class="text-xl font-semibold text-gray-800 mb-2">Fitur Utama</h4>
+                    <ul class="space-y-4 text-gray-700">
+                        <li class="flex items-start">
+                            <span class="text-xl mr-3">💰</span>
+                            <div>
+                                <strong class="font-semibold">Input Gaji & Pengeluaran</strong> – Catat gaji dan import pengeluaran harian dengan mudah.
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-xl mr-3">🤖</span>
+                            <div>
+                                <strong class="font-semibold">Rekomendasi Berbasis AI</strong> – Teknologi Machine Learning menghasilkan strategi finansial yang sesuai dengan kebiasaanmu.
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-xl mr-3">📊</span>
+                            <div>
+                                <strong class="font-semibold">Visualisasi Interaktif</strong> – Grafik dan laporan sederhana untuk memahami arus keuanganmu.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section relative p-8 text-center mt-16 md:mt-24">
+        <div class="container mx-auto relative z-10">
+            <h3 class="text-2xl md:text-3xl font-bold text-green-600 mb-4">What are you waiting for?</h3>
+            <button class="bg-orange-400 text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:bg-orange-500 transition-colors duration-300">
+                GET STARTED
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-section relative p-8 mt-16" id="team-section">
+        <div class="container mx-auto relative z-10">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between space-y-8 md:space-y-0">
+                <!-- Footer Left Section -->
+                <div class="md:w-1/3">
+                    <div class="flex items-center space-x-2 mb-2">
+                        <img src="{% static 'images/Luxi-Hosting-Logo.png' %}" 
+              alt="Logo Finance Illustration" 
+              class="w-6 md:w-21"> <!-- ukuran kecil di mobile -->
+                        <span class="text-xl font-bold text-gray-800">Finance</span>
+                    </div>
+                    <p class="text-sm text-gray-700 max-w-xs">
+                        Smart Finance Starts Here. Kelola gaji lebih mudah dengan rekomendasi cerdas berbasis Machine Learning.
+                    </p>
+                </div>
+
+                <!-- Footer Middle Section - Links -->
+                <div class="md:w-1/3 mt-6 md:mt-0">
+                    <h4 class="font-semibold mb-2">. Home</h4>
+                    <h4 class="font-semibold mb-2">. About</h4>
+                    <h4 class="font-semibold">. Try Feature</h4>
+                </div>
+                
+                <!-- Footer Right Section - Team -->
+                <div class="md:w-1/3 mt-6 md:mt-0">
+                    <h4 class="font-semibold mb-2">Our Team</h4>
+                    <ul class="list-disc list-inside text-sm text-gray-700">
+                        <li>Arifah Magna Saidah</li>
+                        <li>Reva Putria Sabila</li>
+                        <li>Keysya Aulia</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Copyright -->
+            <div class="mt-8 text-center text-sm text-gray-500">
+                &copy; 2025 SmartFinance. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

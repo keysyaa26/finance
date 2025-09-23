@@ -1,0 +1,239 @@
+body {
+  font-family: "Montserrat", sans-serif;
+}
+
+.cta-section {
+  background-color: #f7fbeb;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-section::before {
+  content: "";
+  position: absolute;
+  top: -20%;
+  left: -10%;
+  width: 500px;
+  height: 500px;
+  background-color: #d8f3d8;
+  border-radius: 50%;
+  transform: scale(0.6);
+  opacity: 0.6;
+}
+
+.cta-section::after {
+  content: "";
+  position: absolute;
+  bottom: -20%;
+  right: -10%;
+  width: 600px;
+  height: 600px;
+  background-color: #d1f3e7;
+  border-radius: 50%;
+  transform: scale(0.7);
+  opacity: 0.6;
+}
+
+.footer-section {
+  background-color: #ffead6;
+  position: relative;
+  overflow: hidden;
+}
+
+.footer-section::before {
+  content: "";
+  position: absolute;
+  top: -50px;
+  left: 20%;
+  width: 400px;
+  height: 400px;
+  background-color: #d9e2ff;
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+.footer-section::after {
+  content: "";
+  position: absolute;
+  bottom: -50px;
+  right: -10%;
+  width: 500px;
+  height: 500px;
+  background-color: #e5f5df;
+  border-radius: 50%;
+  opacity: 0.7;
+}
+
+/* Animasi */
+@keyframes fadeInSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInSlideUp {
+  animation: fadeInSlideUp 1s ease-out forwards;
+}
+
+/* Animasi gelembung */
+@keyframes floatBubble {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-20px) rotate(10deg);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.8;
+  }
+}
+
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  animation: floatBubble 10s infinite ease-in-out;
+  z-index: -10;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(-100px) scale(1.1);
+  }
+  100% {
+    transform: translateY(-200px) scale(0.9);
+    opacity: 0;
+  }
+}
+
+.bubble {
+  animation: floatUp 6s infinite ease-in;
+}
+
+.bubble:nth-child(2) {
+  animation-duration: 8s;
+  animation-delay: 2s;
+}
+
+.bubble:nth-child(3) {
+  animation-duration: 10s;
+  animation-delay: 4s;
+}
+
+.cta-section::before,
+.cta-section::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  z-index: 0;
+  opacity: 0.4;
+  animation: float 12s infinite ease-in-out alternate;
+}
+
+.cta-section::before {
+  width: 600px;
+  height: 600px;
+  background: #e6f2e6; /* hijau muda */
+  top: -200px;
+  left: -150px;
+  animation-delay: 0s;
+}
+
+.cta-section::after {
+  width: 400px;
+  height: 400px;
+  background: #dbeafe; /* biru muda */
+  bottom: -150px;
+  right: -100px;
+  animation-delay: 3s;
+}
+
+.footer-section::before,
+.footer-section::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  z-index: 0;
+  opacity: 0.4;
+  animation: float 15s infinite ease-in-out alternate;
+}
+
+.footer-section::before {
+  width: 700px;
+  height: 700px;
+  background: #fef3c7; /* kuning muda */
+  bottom: -250px;
+  left: -200px;
+  animation-delay: 2s;
+}
+
+.footer-section::after {
+  width: 500px;
+  height: 500px;
+  background: #e0e7ff; /* ungu muda */
+  bottom: -200px;
+  right: -150px;
+  animation-delay: 5s;
+}
+
+/* Animasi pelan */
+@keyframes float {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.05);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.cta-section {
+  background-color: #f7fbeb;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-section::before {
+  content: "";
+  position: absolute;
+  top: 20%;
+  left: 25%;
+  width: 150px;
+  height: 150px;
+  background-color: #d8f3d8;
+  border-radius: 50%;
+  opacity: 0.8;
+  z-index: -1;
+}
+
+.cta-section::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 60%;
+  width: 250px;
+  height: 250px;
+  background-color: #d1f3e7;
+  border-radius: 50%;
+  opacity: 0.7;
+  z-index: -1;
+}
+.chart-container {
+  position: relative;
+  height: 300px;
+  width: 100%;
+}

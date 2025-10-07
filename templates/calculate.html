@@ -37,6 +37,15 @@
             <p class="text-center text-gray-600 mb-8">
                 Silakan masukkan gaji bulananmu dan unggah catatan pengeluaran harianmu untuk mendapatkan rekomendasi finansial yang cerdas.
             </p>
+
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <li style="color: red; font-weight: bold;">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
             
             <form action="{% url 'predict' %}" method="post" enctype="multipart/form-data" class="space-y-6">
                 {% csrf_token %} 

@@ -27,5 +27,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
     path('calculate', views.calculate, name='calculate'),
-    path('/predict', views.predict, name='predict'),
+    path('predict', views.predict, name='predict'),
 ]

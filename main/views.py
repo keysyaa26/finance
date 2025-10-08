@@ -7,6 +7,8 @@ import os
 from .utilys import preprocessingData, prepareData, hasilRekomendasi
 import logging
 from django.contrib import messages
+import json
+import numpy as np
 
 logger = logging.getLogger('smartFinance')
 
@@ -36,7 +38,7 @@ def predict(request):
             try:
                 df = pd.read_excel(file)
             except Exception as e:
-                messages.error(request, "❌ Error reading the Excel file. Please upload a valid .xlsx file.")
+                messages.error(request, "Error reading the Excel file. Please upload a valid .xlsx file.")
                 return render(request, "calculate.html")
             
             try:
@@ -52,7 +54,6 @@ def predict(request):
                     features_scaled,
                     columns=["TotalAmount", "AvgAmount", "TransCount"]
                 )
-                context["scaled_preview"] = scaled_df.head().to_html(classes="table table-sm")
 
                 # clustering
                 cluster = kmeans_model.predict(features_scaled)[0]
@@ -60,15 +61,34 @@ def predict(request):
 
                 # DEBUG CLUSTERING DATA
                 agg_data["Cluster"] = kmeans_model.predict(features_scaled)
-                context["cluster_preview"] = agg_data.to_html(classes="table table-sm")
 
                 hasil = hasilRekomendasi(gaji, cluster, agg_data)
                 context.update(hasil)
+
+                data["Bulan"] = data["Tanggal"].dt.strftime("%B")
+                trend_by_month = (
+                    data.groupby(["Bulan", "Kategori"])["Nominal"].sum().unstack(fill_value=0)
+                )
+                month_order = pd.to_datetime(trend_by_month.index, format="%B").month
+                trend_by_month = trend_by_month.iloc[np.argsort(month_order)]
+
+                trend_json = {
+                    "months": list(trend_by_month.index),
+                    "categories": {col: trend_by_month[col].tolist() for col in trend_by_month.columns},
+                }
             except Exception as e:
                 logger.info(f"Error processing the Excel file: {e}")
-                messages.error(request, "❌ Error processing the Excel file.")
+                messages.error(request, "Error processing the Excel file.")
                 return render(request, "calculate.html")
         
-    logger.info(hasil)
+    context.update(hasil)
 
-    return render(request, 'calculate.html', {"hasil": gaji})
+    
+    context["rekomendasi_json"] = json.dumps(hasil["rekomendasi"])
+    context["total_chart_json"] = json.dumps(hasil["charts"]["total"])
+    context["kebutuhan_chart_json"] = json.dumps(hasil["charts"]["kebutuhan"])
+    context["bulan"] = json.dumps(hasil["bulan"])
+    context["trend_json"] = json.dumps(trend_json)
+    logger.info(f"trend_json: {trend_json}")
+
+    return render(request, 'calculate.html', context)

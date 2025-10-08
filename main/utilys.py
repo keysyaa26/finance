@@ -46,6 +46,7 @@ def hasilRekomendasi(gaji, cluster, user_agg):
     next_month = today + relativedelta(months=1)
     bulan = next_month.strftime("%B %Y")  
 
+    # --- Tentukan proporsi sesuai cluster ---
     if cluster == 0:
         proporsi = {'Kebutuhan': 0.45, 'Keinginan': 0.20, 'Tabungan': 0.35}
         cluster_name = "Hemat"
@@ -56,39 +57,31 @@ def hasilRekomendasi(gaji, cluster, user_agg):
         proporsi = {'Kebutuhan': 0.55, 'Keinginan': 0.25, 'Tabungan': 0.20}
         cluster_name = "Boros"
 
+    # --- Hitung rekomendasi utama ---
     rekomendasi = {k: round(gaji * v, 2) for k, v in proporsi.items()}
 
+    # --- Hitung rincian kebutuhan per kategori ---
     total_pengeluaran = user_agg['TotalAmount'].sum()
     detail = []
     for _, row in user_agg.iterrows():
         persen = row['TotalAmount'] / total_pengeluaran
         nominal = gaji * persen * proporsi['Kebutuhan']
-        detail.append((row['Kategori'], round(nominal, 2)))
+        detail.append({
+            "kategori": row['Kategori'],
+            "nominal": round(nominal, 2),
+            "persen": round(persen * 100, 1)
+        })
 
-    labels = [d[0] for d in detail]
-    values = [d[1] for d in detail]
-    fig1, ax1 = plt.subplots(figsize=(5,5))
-    ax1.pie(values, labels=labels, autopct='%1.1f%%', startangle=140)
-    ax1.set_title(f"Distribusi Kebutuhan ({bulan}, Cluster: {cluster_name})")
+    # --- Siapkan data chart untuk frontend ---
+    kebutuhan_chart = {
+        "labels": [d["kategori"] for d in detail],
+        "values": [d["nominal"] for d in detail]
+    }
 
-    buffer1 = io.BytesIO()
-    plt.savefig(buffer1, format='png')
-    buffer1.seek(0)
-    kebutuhan_chart = base64.b64encode(buffer1.read()).decode('utf-8')
-    plt.close(fig1)
-
-    fig2, ax2 = plt.subplots(figsize=(5,5))
-    ax2.pie(proporsi.values(),
-            labels=proporsi.keys(),
-            autopct='%1.1f%%', startangle=140,
-            colors=['#4CAF50','#FF9800','#2196F3'])
-    ax2.set_title(f"Distribusi Total Alokasi Gaji ({bulan})")
-
-    buffer2 = io.BytesIO()
-    plt.savefig(buffer2, format='png')
-    buffer2.seek(0)
-    total_chart = base64.b64encode(buffer2.read()).decode('utf-8')
-    plt.close(fig2)
+    total_chart = {
+        "labels": list(rekomendasi.keys()),
+        "values": list(rekomendasi.values())
+    }
 
     return {
         "bulan": bulan,

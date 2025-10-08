@@ -1,221 +1,531 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Finance App</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
+
+      .cta-section {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        min-height: 100%;
+        height: 100%;
+      }
+
+      /* Main container menyesuaikan konten */
+      main {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start; /* biar mulai dari atas kalau isi tinggi */
+        min-height: 100vh;
+        padding-top: 3rem;
+        padding-bottom: 3rem;
+        overflow: visible; /* biar elemen panjang tetap muncul */
+      }
+
+      /* Section hasil rekomendasi responsif */
+      #recommendation-results {
+        position: relative;
+        width: 90%;
+        max-width: 1100px;
+        margin: 0 auto;
+        margin-top: 4rem;
+        margin-bottom: 4rem;
+      }
+
+      /* Responsif untuk mobile */
+      @media (max-width: 768px) {
+        #recommendation-results .chart-container {
+          width: 100%;
+          overflow-x: auto;
+        }
+        main {
+          padding: 1rem;
+          min-height: auto;
+        }
+      }
+
+      /* Footer tidak ketimpa */
+      footer {
+        position: relative;
+        z-index: 5;
+        background-color: white;
+      }
     </style>
-</head>
-<body class="bg-white">
+  </head>
+  <body class="bg-white">
     <!-- Header -->
-    <header class="sticky top-0 z-50 bg-white shadow-md container mx-auto p-4 flex items-center justify-between">
+    <header
+      class="sticky top-0 z-50 bg-white shadow-md container mx-auto p-4 flex items-center justify-between"
+    >
       <div class="flex items-center space-x-2">
-          <img src="{% static 'images/Luxi-Hosting-Logo.png' %}" 
-              alt="Logo Finance Illustration" 
-              class="w-10 md:w-25"> <!-- ukuran kecil di mobile -->
-          <span class="text-lg md:text-2xl font-bold text-gray-800">Finance</span>
+        <img
+          src="{% static 'images/Luxi-Hosting-Logo.png' %}"
+          alt="Logo Finance Illustration"
+          class="w-10 md:w-25"
+        />
+        <!-- ukuran kecil di mobile -->
+        <span class="text-lg md:text-2xl font-bold text-gray-800">Finance</span>
       </div>
 
-        <nav class="flex items-center space-x-6 scale-70 md:scale-100 origin-top-right">
-            <a href="{% url 'home' %}" class="text-gray-600 font-medium hover:text-green-500">Home</a>
-            <a href="#team-section" class="text-gray-600 font-medium hover:text-green-500">Team</a>
-            <a href="{% url 'calculate' %}" 
-            class="hidden md:inline-block bg-orange-400 text-white font-semibold py-2 px-6 rounded-lg shadow-md hover:bg-orange-500 transition-colors duration-300">TRY</a>
-        </nav>
+      <nav
+        class="flex items-center space-x-6 scale-70 md:scale-100 origin-top-right"
+      >
+        <a
+          href="{% url 'home' %}"
+          class="text-gray-600 font-medium hover:text-green-500"
+          >Home</a
+        >
+        <a
+          href="#team-section"
+          class="text-gray-600 font-medium hover:text-green-500"
+          >Team</a
+        >
+        <a
+          href="{% url 'calculate' %}"
+          class="hidden md:inline-block bg-orange-400 text-white font-semibold py-2 px-6 rounded-lg shadow-md hover:bg-orange-500 transition-colors duration-300"
+          >TRY</a
+        >
+      </nav>
     </header>
 
     <!-- Main Content -->
-    <main class="container mx-auto p-4 md:flex items-center justify-center min-h-[calc(100vh-6rem)] h-[700px] relative">
-        <div class="cta-section absolute inset-0 z-0"></div>
-        <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-2xl relative z-10">
-            <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Mulai Atur Keuanganmu</h1>
-            <p class="text-center text-gray-600 mb-8">
-                Silakan masukkan gaji bulananmu dan unggah catatan pengeluaran harianmu untuk mendapatkan rekomendasi finansial yang cerdas.
+    <main class="container mx-auto relative bg-gray-50">
+      <div
+        class="cta-section bg-gradient-to-b from-green-100 to-green-200"
+      ></div>
+      <div
+        class="bg-white rounded-xl shadow-lg p-8 w-full max-w-2xl relative z-10"
+        id="input-section"
+      >
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">
+          Mulai Atur Keuanganmu
+        </h1>
+        <p class="text-center text-gray-600 mb-8">
+          Silakan masukkan gaji bulananmu dan unggah catatan pengeluaran
+          harianmu untuk mendapatkan rekomendasi finansial yang cerdas.
+        </p>
+
+        {% if messages %}
+        <ul>
+          {% for message in messages %}
+          <li style="color: red; font-weight: bold">{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        <form
+          action="{% url 'predict' %}"
+          method="post"
+          enctype="multipart/form-data"
+          class="space-y-6"
+        >
+          {% csrf_token %}
+          <!-- Input Gaji -->
+          <div class="border-2 border-orange-400 rounded-lg p-4">
+            <label
+              for="salary-input"
+              class="block text-gray-700 font-medium mb-2"
+              >Gaji Bulanan</label
+            >
+            <div class="relative rounded-md shadow-sm">
+              <input
+                type="number"
+                id="salary-input"
+                name="salary"
+                class="block w-full rounded-lg border-0 py-2.5 px-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-500 sm:text-sm sm:leading-6"
+                placeholder="Masukkan gaji bulananmu"
+              />
+            </div>
+          </div>
+
+          <!-- Import Excel -->
+          <div class="border-2 border-orange-400 rounded-lg p-4">
+            <label
+              for="excel-upload"
+              class="block text-gray-700 font-medium mb-2"
+              >Unggah catatan pengeluaran (file excel)</label
+            >
+            <div class="flex items-center space-x-4">
+              <input
+                type="file"
+                id="excel-upload"
+                name="expenses"
+                accept=".xlsx, .xls"
+                class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-600 hover:file:bg-orange-100"
+              />
+            </div>
+          </div>
+
+          <!-- Tombol Proses -->
+          <button
+            id="process-button"
+            class="w-full bg-green-500 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-green-600 transition-colors duration-300"
+          >
+            Proses & Dapatkan Rekomendasi
+          </button>
+        </form>
+      </div>
+
+      <!-- Hasil Rekomendasi -->
+      {% if rekomendasi %}
+      <section id="recommendation-results" class="relative z-10">
+        <div
+          class="bg-white rounded-xl shadow-lg p-8 w-[90%] max-w-4xl relative z-10 mx-auto my-12 flex flex-col justify-center items-center"
+        >
+          <h1
+            class="text-3xl lg:text-3xl font-bold text-gray-800 text-center mb-6"
+          >
+            HASIL REKOMENDASI KEUANGAN BULAN
+            <span class="text-cyan-600">{{ bulan }}</span>
+          </h1>
+
+          <!-- baris 1 -->
+          <div
+            class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center w-full mb-10"
+          >
+            <!-- Kolom Kiri: Penjelasan -->
+            <div class="text-gray-700 text-center">
+              {% if cluster_name == 'Hemat' %}
+              <p>
+                Kamu termasuk dalam kelompok
+                <span
+                  class="font-bold text-lg text-yellow-600 bg-yellow-100 px-2 py-1 rounded-md shadow-sm"
+                >
+                  Hemat </span
+                >, yang cenderung mengelola keuangan dengan bijak dan
+                memprioritaskan tabungan. Kamu mengalokasikan sebagian besar
+                gaji untuk kebutuhan pokok, dengan porsi yang seimbang antara
+                keinginan dan simpanan. Berikut adalah diagram pembagian alokasi
+                gajimu berdasarkan hasil analisis sistem:
+              </p>
+              {% elif cluster_name == 'Normal' %}
+              <p>
+                Kamu termasuk dalam kelompok
+                <span
+                  class="font-bold text-lg text-green-600 bg-green-100 px-2 py-1 rounded-md shadow-sm"
+                >
+                  Normal Spender </span
+                >, dengan keseimbangan yang cukup baik antara kebutuhan,
+                keinginan, dan tabungan. Sekitar
+                <span class="font-semibold">setengah dari gajimu</span>
+                dialokasikan untuk kebutuhan utama, sementara sisanya terbagi
+                antara gaya hidup dan simpanan. Lihat pembagian lengkapnya pada
+                diagram berikut:
+              </p>
+              {% elif cluster_name == 'Boros' %}
+              <p>
+                Kamu tergolong dalam kelompok
+                <span
+                  class="font-bold text-lg text-red-600 bg-red-100 px-2 py-1 rounded-md shadow-sm"
+                >
+                  Boros </span
+                >, dengan porsi pengeluaran untuk kebutuhan dan keinginan yang
+                relatif tinggi dibandingkan tabungan. Sistem merekomendasikan
+                untuk mulai menyesuaikan alokasi agar porsi tabungan meningkat.
+                Berikut adalah visualisasi proporsi alokasi gajimu:
+              </p>
+              {% endif %}
+            </div>
+
+            <!-- Kolom Kanan: Pie Chart -->
+            <div>
+              <h3 class="text-xl font-semibold text-center mb-4">
+                Rekomendasi Proporsi Pengeluaran
+              </h3>
+              <div class="chart-container">
+                <canvas id="pieChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- baris 2 -->
+           <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center w-full">
+          <!-- Kolom Kiri: Line Chart -->
+          <div>
+            <h3 class="text-xl font-semibold text-center mb-4">
+              Tren Pengeluaran Berdasarkan Kategori
+            </h3>
+            <div class="chart-container">
+              <canvas id="trendChart"></canvas>
+            </div>
+          </div>
+          <div class="text-gray-700 text-center leading-relaxed">
+            <p>
+              Grafik ini memperlihatkan bagaimana kebiasaan pengeluaranmu
+              berubah dari waktu ke waktu. Perhatikan kategori dengan garis
+              paling naik — di situlah pengeluaranmu paling sering meningkat.
+              Gunakan insight ini untuk menyeimbangkan alokasi gaji dan mengatur
+              target tabungan bulan depan. 💡
             </p>
 
-            {% if messages %}
-                <ul>
-                    {% for message in messages %}
-                        <li style="color: red; font-weight: bold;">{{ message }}</li>
-                    {% endfor %}
-                </ul>
+            {% if cluster_name == 'Hemat' %}
+            <p class="mt-4 text-green-600 font-semibold">
+              Pengeluaranmu tergolong stabil dan efisien. Pertahankan kebiasaan
+              hematmu untuk hasil keuangan jangka panjang yang lebih baik!
+            </p>
+            {% elif cluster_name == 'Normal' %}
+            <p class="mt-4 text-yellow-600 font-semibold">
+              Pengeluaranmu cukup seimbang, namun tetap perhatikan fluktuasi di
+              kategori hiburan dan gaya hidup agar tabungan tetap terjaga.
+            </p>
+            {% elif cluster_name == 'Boros' %}
+            <p class="mt-4 text-red-600 font-semibold">
+              Beberapa kategori menunjukkan kenaikan pengeluaran signifikan.
+              Coba alokasikan ulang anggaran untuk meningkatkan porsi tabungan.
+            </p>
             {% endif %}
-
-            
-            <form action="{% url 'predict' %}" method="post" enctype="multipart/form-data" class="space-y-6">
-                {% csrf_token %} 
-                <!-- Input Gaji -->
-                <div class="border-2 border-orange-400 rounded-lg p-4">
-                    <label for="salary-input" class="block text-gray-700 font-medium mb-2">Gaji Bulanan</label>
-                    <div class="relative rounded-md shadow-sm">
-                        <input type="number" id="salary-input" name="salary" class="block w-full rounded-lg border-0 py-2.5 px-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-500 sm:text-sm sm:leading-6" placeholder="Masukkan gaji bulananmu">
-                    </div>
-                </div>
-
-                <!-- Import Excel -->
-                <div class="border-2 border-orange-400 rounded-lg p-4">
-                    <label for="excel-upload" class="block text-gray-700 font-medium mb-2">Unggah catatan pengeluaran (file excel)</label>
-                    <div class="flex items-center space-x-4">
-                        <input type="file" id="excel-upload" name="expenses" accept=".xlsx, .xls" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-600 hover:file:bg-orange-100">
-                    </div>
-                </div>
-                
-                <!-- Tombol Proses -->
-                <button id="process-button" class="w-full bg-green-500 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-green-600 transition-colors duration-300">
-                    Proses & Dapatkan Rekomendasi
-                </button>
-            </form>
+          </div>
+           </div>
         </div>
+      </section>
+      {% endif %}
+
+      <!-- Hidden Modal -->
+      <div id="introModal"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-xl w-[90%] max-w-lg p-8 relative text-center animate-fadeIn">
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">Selamat Datang di SmartFinance</h2>
+          <p class="text-gray-700 leading-relaxed mb-6">
+            Aplikasi ini akan membantu kamu mengelola keuangan dengan lebih cerdas.
+            Cukup masukkan <span class="font-semibold text-green-600">gaji bulanan</span>
+            dan unggah <span class="font-semibold text-green-600">data pengeluaran harian (Excel)</span>,
+            pastikan terdapat kolom <span class="font-semibold text-green-600">Tanggal</span>, 
+            <span class="font-semibold text-green-600">Kategori</span>, dan <span class="font-semibold text-green-600">Nominal</span> dalam excel agar sistem dapat memprosesnya.
+          </p>
+          <button id="closeModal"
+            class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition">
+            Mengerti
+          </button>
+        </div>
+      </div>
+
     </main>
-
-    <p>{{ hasil }}</p>
-
-
-    <!-- Hasil Rekomendasi -->
-    <section id="recommendation-results" class="container mx-auto p-4 mt-16 hidden">
-        <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Hasil Rekomendasi Keuangan</h2>
-        <div class="bg-white rounded-xl shadow-lg p-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- Bar Chart -->
-                <div>
-                    <h3 class="text-xl font-semibold text-center mb-4">Pembagian Gaji Berdasarkan Kategori</h3>
-                    <div class="chart-container">
-                        <canvas id="barChart"></canvas>
-                    </div>
-                </div>
-                <!-- Pie Chart -->
-                <div>
-                    <h3 class="text-xl font-semibold text-center mb-4">Proporsi Pengeluaran</h3>
-                    <div class="chart-container">
-                        <canvas id="pieChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
 
     <!-- Footer -->
     <footer class="footer-section relative p-8 mt-16" id="team-section">
-        <div class="container mx-auto relative z-10">
-            <div class="flex flex-col md:flex-row items-start md:items-center justify-between space-y-8 md:space-y-0">
-                <!-- Footer Left Section -->
-                <div class="md:w-1/3">
-                    <div class="flex items-center space-x-2 mb-2">
-                        <img src="{% static 'images/Luxi-Hosting-Logo.png' %}" 
-              alt="Logo Finance Illustration" 
-              class="w-6 md:w-21"> <!-- ukuran kecil di mobile -->
-                        <span class="text-xl font-bold text-gray-800">Finance</span>
-                    </div>
-                    <p class="text-sm text-gray-700 max-w-xs">
-                        Smart Finance Starts Here. Kelola gaji lebih mudah dengan rekomendasi cerdas berbasis Machine Learning.
-                    </p>
-                </div>
-
-                <!-- Footer Middle Section - Links -->
-                <div class="md:w-1/3 mt-6 md:mt-0">
-                    <ul class="flex flex-col space-y-2">
-                        <li>
-                            <a href="{% url 'home' %}" class="text-black-600 font-semibold hover:text-green-500">. Home</a>
-                        </li>
-                        <li>
-                            <a href="{% url 'home' %}#about-section" class="text-black-600 font-semibold hover:text-green-500">. About</a>
-                        </li>
-                        <li>
-                            <a href="{% url 'calculate' %}" class="text-black-600 font-semibold hover:text-green-500">. Try Feature</a>
-                        </li>
-                    </ul>
-                </div>
-                
-                <!-- Footer Right Section - Team -->
-                <div class="md:w-1/3 mt-6 md:mt-0">
-                    <h4 class="font-semibold mb-2">Our Team</h4>
-                    <ul class="list-disc list-inside text-sm text-gray-700">
-                        <li>Arifah Magna Saidah</li>
-                        <li>Reva Putria Sabila</li>
-                        <li>Keysya Aulia</li>
-                    </ul>
-                </div>
+      <div class="container mx-auto relative z-10">
+        <div
+          class="flex flex-col md:flex-row items-start md:items-center justify-between space-y-8 md:space-y-0"
+        >
+          <!-- Footer Left Section -->
+          <div class="md:w-1/3">
+            <div class="flex items-center space-x-2 mb-2">
+              <img
+                src="{% static 'images/Luxi-Hosting-Logo.png' %}"
+                alt="Logo Finance Illustration"
+                class="w-6 md:w-21"
+              />
+              <!-- ukuran kecil di mobile -->
+              <span class="text-xl font-bold text-gray-800">Finance</span>
             </div>
+            <p class="text-sm text-gray-700 max-w-xs">
+              Smart Finance Starts Here. Kelola gaji lebih mudah dengan
+              rekomendasi cerdas berbasis Machine Learning.
+            </p>
+          </div>
 
-            <!-- Copyright -->
-            <div class="mt-8 text-center text-sm text-gray-500">
-                &copy; 2025 SmartFinance. All Rights Reserved.
-            </div>
+          <!-- Footer Middle Section - Links -->
+          <div class="md:w-1/3 mt-6 md:mt-0">
+            <ul class="flex flex-col space-y-2">
+              <li>
+                <a
+                  href="{% url 'home' %}"
+                  class="text-black-600 font-semibold hover:text-green-500"
+                  >. Home</a
+                >
+              </li>
+              <li>
+                <a
+                  href="{% url 'home' %}#about-section"
+                  class="text-black-600 font-semibold hover:text-green-500"
+                  >. About</a
+                >
+              </li>
+              <li>
+                <a
+                  href="{% url 'calculate' %}"
+                  class="text-black-600 font-semibold hover:text-green-500"
+                  >. Try Feature</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <!-- Footer Right Section - Team -->
+          <div class="md:w-1/3 mt-6 md:mt-0">
+            <h4 class="font-semibold mb-2">Our Team</h4>
+            <ul class="list-disc list-inside text-sm text-gray-700">
+              <li>Arifah Magna Saidah</li>
+              <li>Reva Putria Sabila</li>
+              <li>Keysya Aulia</li>
+            </ul>
+          </div>
         </div>
+
+        <!-- Copyright -->
+        <div class="mt-8 text-center text-sm text-gray-500">
+          &copy; 2025 SmartFinance. All Rights Reserved.
+        </div>
+      </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const processButton = document.getElementById('process-button');
-        const resultsSection = document.getElementById('recommendation-results');
+      const processButton = document.getElementById("process-button");
+      const resultsSection = document.getElementById("recommendation-results");
+      const inputSection = document.getElementById("input-section");
+      const modal = document.getElementById("introModal");
+      const closeBtn = document.getElementById("closeModal");
 
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
+      modal.classList.remove("hidden");
+      closeBtn.addEventListener("click", function() {
+          modal.classList.add("hidden");
         });
 
-        processButton.addEventListener('click', () => {
-            // Logika untuk memproses data akan ditambahkan di sini
-            console.log('Proses data...');
+      processButton.addEventListener("click", () => {
+        // Logika untuk memproses data akan ditambahkan di sini
+        console.log(inputSection);
+      });
 
-            // Menampilkan bagian hasil rekomendasi
-            resultsSection.classList.remove('hidden');
+      document.addEventListener("DOMContentLoaded", function () {
+        const totalChart = JSON.parse("{{ total_chart_json|escapejs }}");
+        inputSection.classList.toggle("hidden");
+        console.log("tes");
 
-            // Data dummy untuk chart
-            const chartData = {
-                labels: ['Kebutuhan', 'Keinginan', 'Tabungan', 'Investasi'],
-                datasets: [{
-                    label: 'Persentase Gaji',
-                    data: [50, 20, 20, 10],
-                    backgroundColor: [
-                        'rgba(75, 192, 192, 0.6)',
-                        'rgba(255, 159, 64, 0.6)',
-                        'rgba(54, 162, 235, 0.6)',
-                        'rgba(153, 102, 255, 0.6)'
-                    ],
-                    borderColor: [
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(255, 159, 64, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(153, 102, 255, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            };
+        const data = {
+          labels: totalChart.labels,
+          datasets: [
+            {
+              data: totalChart.values,
+              backgroundColor: ["#4CAF50", "#FF6F00", "#2196F3"],
+              borderColor: "transparent",
+              borderWidth: 0,
+              borderRadius: 15,
+              spacing: 8,
+              hoverOffset: 4,
+            },
+          ],
+        };
 
-            // Bar Chart
-            const barCtx = document.getElementById('barChart').getContext('2d');
-            new Chart(barCtx, {
-                type: 'bar',
-                data: chartData,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+        const innerRingPlugin = {
+          id: "innerRing",
+          beforeDraw(chart) {
+            const {
+              ctx,
+              chartArea: { left, top, right, bottom, width, height },
+            } = chart;
+            const centerX = (left + right) / 2;
+            const centerY = (top + bottom) / 2;
+            const innerRadius = chart.getDatasetMeta(0).data[0].innerRadius;
+
+            // 1. Gambar Lingkaran Tengah Putih (Inner Ring)
+            ctx.save();
+            ctx.beginPath();
+            // Radius lingkaran tengah putih sedikit lebih kecil dari innerRadius chart
+            ctx.arc(centerX, centerY, innerRadius, 0, 2 * Math.PI);
+            ctx.fillStyle = "white"; // Sesuai warna tengah donut
+            ctx.fill();
+            ctx.restore();
+          },
+        };
+
+        const config = {
+          type: "doughnut",
+          data: data,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: "60%", // Ukuran lubang tengah donut (inner hole)
+            plugins: {
+              legend: {
+                display: false, // Sembunyikan legend bawaan, kita pakai label HTML custom
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    let label = context.label || "";
+                    if (label) {
+                      label += ": ";
                     }
-                }
-            });
+                    if (context.parsed !== null) {
+                      label += context.parsed + "%";
+                    }
+                    return label;
+                  },
+                },
+              },
+            },
+            // Animasi rotasi chart agar dimulai dari atas seperti gambar
+            rotation: -90,
+            circumference: 360,
+            layout: {
+              padding: 10, // Padding di sekitar chart
+            },
+          },
+          plugins: [innerRingPlugin],
+        };
 
-            // Pie Chart
-            const pieCtx = document.getElementById('pieChart').getContext('2d');
-            new Chart(pieCtx, {
-                type: 'pie',
-                data: chartData,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false
-                }
-            });
+        const ctx = document.getElementById("pieChart").getContext("2d");
+        if (window.myChart) {
+          window.myChart.destroy();
+        }
+        window.myChart = new Chart(ctx, config);
+
+        const trendData = JSON.parse("{{ trend_json|escapejs }}");
+
+        const ctxTrend = document.getElementById("trendChart").getContext("2d");
+        new Chart(ctxTrend, {
+          type: "line",
+          data: {
+            labels: trendData.months,
+            datasets: Object.keys(trendData.categories).map((cat, i) => ({
+              label: cat,
+              data: trendData.categories[cat],
+              borderWidth: 2,
+              tension: 0.4,
+              fill: false,
+              borderColor: [
+                "#4CAF50",
+                "#2196F3",
+                "#FF9800",
+                "#9C27B0",
+                "#F44336",
+              ][i % 5],
+              pointRadius: 4,
+              pointHoverRadius: 6,
+            })),
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: "bottom" },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) =>
+                    `${ctx.dataset.label}: Rp ${ctx.parsed.y.toLocaleString(
+                      "id-ID"
+                    )}`,
+                },
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { callback: (v) => "Rp " + v.toLocaleString("id-ID") },
+              },
+            },
+          },
         });
+      });
     </script>
-</body>
+  </body>
 </html>
